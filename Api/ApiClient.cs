@@ -16,4 +16,9 @@ public class ApiClient
         var request = new RestRequest(endpoint, Method.Get);
         return await _client.ExecuteAsync(request);
     }
+    
+    public string BuildQueryParameter(string key, string value)
+    {
+        return $"{key}={Uri.EscapeDataString(value)}";
+    }
 }
