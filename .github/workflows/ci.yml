@@ -43,15 +43,19 @@ jobs:
           curl -o allure.tar.gz -L https://github.com/allure-framework/allure2/releases/download/2.21.0/allure-2.21.0.tgz
           tar -xzf allure.tar.gz
           sudo mv allure-2.21.0 /opt/allure
-          sudo ln -s /opt/allure/bin/allure /usr/local/bin/allure
+          echo "PATH=$PATH:/opt/allure/bin" >> $GITHUB_ENV
 
       # Step 7: Verify Allure Installation
       - name: Verify Allure Installation
-        run: allure --version
+        run: |
+          source $GITHUB_ENV
+          allure --version
 
       # Step 8: Generate Allure Report
       - name: Generate Allure Report
-        run: allure generate allure-results --clean -o allure-report
+        run: |
+          source $GITHUB_ENV
+          allure generate allure-results --clean -o allure-report
 
       # Step 9: Upload Allure Report as Artifact
       - name: Upload Allure Report
@@ -72,4 +76,5 @@ jobs:
       # Step 2: Serve Allure Report Locally (Optional)
       - name: Serve Allure Report (Optional)
         run: |
+          source $GITHUB_ENV
           allure open allure-report
