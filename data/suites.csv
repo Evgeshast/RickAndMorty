@@ -1,0 +1,8 @@
+"Status","Start Time","Stop Time","Duration in ms","Parent Suite","Suite","Sub Suite","Test Class","Test Method","Name","Description"
+"passed","Thu Jan 09 16:05:51 UTC 2025","Thu Jan 09 16:05:51 UTC 2025","200","","Tests.CharacterApiTests","","Tests.CharacterApiTests","","GetCharacters_WithNameFilter_ShouldReturnFilteredResults",""
+"passed","Thu Jan 09 16:05:51 UTC 2025","Thu Jan 09 16:05:51 UTC 2025","166","","Tests.CharacterApiTests","","Tests.CharacterApiTests","","GetCharacters_WithStatusFilter_ShouldReturnFilteredResults",""
+"passed","Thu Jan 09 16:05:50 UTC 2025","Thu Jan 09 16:05:50 UTC 2025","374","","Tests.CharacterApiTests","","Tests.CharacterApiTests","","GetCharacterDetails_ShouldReturnCorrectDetails",""
+"passed","Thu Jan 09 16:05:50 UTC 2025","Thu Jan 09 16:05:50 UTC 2025","64","","Tests.CharacterApiTests","","Tests.CharacterApiTests","","GetCharacters_WithGenderFilter_ShouldReturnFilteredResults",""
+"passed","Thu Jan 09 16:05:51 UTC 2025","Thu Jan 09 16:05:51 UTC 2025","314","","Tests.CharacterApiTests","","Tests.CharacterApiTests","","GetCharacters_WithSpeciesFilter_ShouldReturnFilteredResults",""
+"passed","Thu Jan 09 16:05:51 UTC 2025","Thu Jan 09 16:05:51 UTC 2025","117","","Tests.CharacterApiTests","","Tests.CharacterApiTests","","GetCharacters_WithPagination_ShouldReturnValidResponseAndNavigatePages",""
+"passed","Thu Jan 09 16:05:50 UTC 2025","Thu Jan 09 16:05:51 UTC 2025","249","","Tests.CharacterApiTests","","Tests.CharacterApiTests","","GetCharacters_WithMultipleFilters_ShouldReturnFilteredResults",""
