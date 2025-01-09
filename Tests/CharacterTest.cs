@@ -1,5 +1,6 @@
 ﻿using Allure.NUnit;
 using Allure.NUnit.Attributes;
+using FluentAssertions;
 using Newtonsoft.Json.Linq;
 using NUnit.Framework;
 using RickAndMorty;
@@ -28,7 +29,8 @@ public class CharacterTest
         Assert.That((int)response.StatusCode, Is.EqualTo(200));
 
         var data = JObject.Parse(response.Content!);
-        Assert.IsNotNull(data["results"]);
+
+        data["results"].Should().NotBeNull();
     }
 
     [Test]
@@ -40,7 +42,7 @@ public class CharacterTest
         var data = JObject.Parse(response.Content);
         foreach (var character in data["results"])
         {
-            StringAssert.Contains("Rick", character["name"].ToString());
+            character["name"].ToString().Should().Contain("Rick");
         }
     }
 }
