@@ -1,0 +1,65 @@
+name: C# CI Pipeline with Allure
+
+on:
+  push:
+    branches:
+      - main
+  pull_request:
+    branches:
+      - main
+
+jobs:
+  build-and-test:
+    runs-on: ubuntu-latest
+
+    steps:
+      # Step 1: Checkout the code
+      - name: Checkout code
+        uses: actions/checkout@v2
+
+      # Step 2: Setup .NET SDK
+      - name: Setup .NET
+        uses: actions/setup-dotnet@v2
+        with:
+          dotnet-version: '7.0' # Change to the version you are using
+
+      # Step 3: Restore dependencies
+      - name: Restore dependencies
+        run: dotnet restore
+
+      # Step 4: Build the project
+      - name: Build the project
+        run: dotnet build --no-restore --configuration Release
+
+      # Step 5: Run tests and generate Allure results
+      - name: Run tests
+        run: dotnet test --logger "console;verbosity=detailed" --results-directory allure-results
+
+      # Step 6: Install Allure
+      - name: Install Allure
+        run: |
+          sudo apt update
+          sudo apt install -y allure
+
+      # Step 7: Generate Allure Report
+      - name: Generate Allure Report
+        run: allure generate allure-results --clean -o allure-report
+
+      # Step 8: Upload Allure Report as Artifact
+      - name: Upload Allure Report
+        uses: actions/upload-artifact@v2
+        with:
+          name: allure-report
+          path: allure-report/
+
+  publish-report:
+    runs-on: ubuntu-latest
+    needs: build-and-test
+    steps:
+      # Step 1: Checkout code
+      - name: Checkout code
+        uses: actions/checkout@v2
+
+      # Step 2: Serve Allure Report Locally (Optional)
+      - name: Serve Allure Report (Optional)
+        run: allure open allure-report
