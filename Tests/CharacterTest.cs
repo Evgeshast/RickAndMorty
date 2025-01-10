@@ -70,10 +70,26 @@ namespace Tests;
             content.Results.Should().Contain(c => c.Status == "Alive");
             content.Results.Should().Contain(c => c.Species == "Human");
         }
-
+        
         [Test, AllureTag("API"), AllureSeverity]
         [AllureFeature("Character API")]
         [AllureLink("Empty string for type filter returns characters with not empty type", "https://github.com/allure-issue/Allure-Issue")]
+        public async Task GetCharacters_WithEmptyStringTypeFilter_ShouldReturnFilteredResults()
+        {
+            // Arrange
+            var resource = ApiClient.BuildQueryParameter("type", string.Empty);
+
+            // Act
+            var response = await ApiClient.GetAsync($"?{resource}");
+            var content = SerializationHelper.Deserialize<CharactersResponse>(response.Content!);
+
+            // Assert
+            response.StatusCode.Should().Be(HttpStatusCode.OK);
+            content.Results.Should().OnlyContain(c => c.Type == string.Empty);
+        }
+
+        [Test, AllureTag("API"), AllureSeverity]
+        [AllureFeature("Character API")]
         public async Task GetCharacters_WithMultipleFilters_ShouldReturnFilteredResults()
         {
             // Arrange
@@ -121,7 +137,6 @@ namespace Tests;
                     (filter == "species" && character.Species == value)
                 );
         }
-        
         
         [Test, AllureTag("API"), AllureSeverity(SeverityLevel.critical)]
         [AllureFeature("Character API")]
