@@ -52,6 +52,24 @@ namespace Tests;
         
         [Test, AllureTag("API"), AllureSeverity]
         [AllureFeature("Character API")]
+        public async Task GetCharacters_ByMultipleIdsArray_ShouldReturnCorrectDetails()
+        {
+            // Arrange
+            var getCharacterDetailsResponse = await ApiClient.GetAsync();
+            var charactersResponse = SerializationHelper.Deserialize<CharactersResponse>(getCharacterDetailsResponse.Content!);
+            var expectedCharacters = charactersResponse.Results.Take(3).ToList();
+
+            // Act
+            var getCharactersDetailsResponse = await ApiClient.GetAsync("/[1,2,3]");
+            var characters = SerializationHelper.Deserialize<List<Character>>(getCharactersDetailsResponse.Content!);
+
+            // Assert
+            getCharactersDetailsResponse.StatusCode.Should().Be(HttpStatusCode.OK);
+            characters.Should().BeEquivalentTo(expectedCharacters);
+        }
+        
+        [Test, AllureTag("API"), AllureSeverity]
+        [AllureFeature("Character API")]
         public async Task GetCharacterDetails_WithNegativeId_ShouldReturnNotFound()
         {
             // Act
