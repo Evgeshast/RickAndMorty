@@ -136,7 +136,7 @@ namespace Tests;
 
             // Assert
             response.StatusCode.Should().Be(HttpStatusCode.NotFound);
-            content.Should().Contain("\"error\": \"There is nothing here\"");
+            content.Should().Contain("\"error\":\"There is nothing here\"");
         }
         
         [Test, AllureTag("API"), AllureSeverity(SeverityLevel.critical)]
