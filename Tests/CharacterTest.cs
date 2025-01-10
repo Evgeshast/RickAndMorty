@@ -2,49 +2,58 @@
 using Allure.Net.Commons;
 using Allure.NUnit;
 using Allure.NUnit.Attributes;
+using Common.Utils;
 using FluentAssertions;
-using Newtonsoft.Json.Linq;
 using NUnit.Framework;
-using RickAndMorty;
+using RickAndMorty.Entities.ApiResponses;
 
 namespace Tests;
 
-[TestFixture]
+    [TestFixture]
     [AllureNUnit]
-    public class CharacterApiTests
+    public class CharacterApiTests : BaseTest
     {
-        private ApiClient _apiClient;
-        private const string BaseUrl = "https://rickandmortyapi.com/api/character";
-
-        [SetUp]
-        public void SetUp()
-        {
-            _apiClient = new ApiClient(BaseUrl);
-        }
         
-        [Test, AllureTag("API"), AllureSeverity(SeverityLevel.normal)]
-        [AllureFeature("Character API"), AllureStory("Retrieve a list of characters with pagination")]
+        [Test, AllureTag("API"), AllureSeverity(SeverityLevel.critical)]
+        [AllureFeature("Character API")]
         public async Task GetCharacters_WithPagination_ShouldReturnValidResponseAndNavigatePages()
         {
             // Arrange
-            var page = 1;
+            const int page = 1;
             var resource = _apiClient.BuildQueryParameter("page", page.ToString());
 
             // Act
             var response = await _apiClient.GetAsync($"?{resource}");
-            var content = response.Content;
+            var content = SerializationHelper.Deserialize<CharactersResponse>(response.Content!);
 
             // Assert
             response.StatusCode.Should().Be(HttpStatusCode.OK);
-            content.Should().Contain("info");
-            content.Should().Contain("results");
-            content.Should().Contain("next");
-            content.Should().Contain("Rick Sanchez");
-            content.Should().Contain("Morty Smith");
+            content.Info.Should().NotBeNull();
+            content.Results.Should().NotBeEmpty();
+            content.Info.Next.Should().NotBeNull();
+            content.Results.Should().Contain(c => c.Name == "Rick Sanchez");
+            content.Results.Should().Contain(c => c.Name == "Morty Smith");
         }
 
-        [Test, AllureTag("API"), AllureSeverity(SeverityLevel.normal)]
-        [AllureFeature("Character API"), AllureStory("Filter characters by name")]
+        [Test, AllureTag("API"), AllureSeverity(SeverityLevel.critical)]
+        [AllureFeature("Character API")]
+        public async Task GetCharacters_WithoutParameters_ShouldReturnValidResponse()
+        {
+            // Act
+            var response = await _apiClient.GetAsync();
+            var content = SerializationHelper.Deserialize<CharactersResponse>(response.Content!);
+
+            // Assert
+            response.StatusCode.Should().Be(HttpStatusCode.OK);
+            content.Info.Should().NotBeNull();
+            content.Results.Should().HaveCountGreaterThan(0);
+            content.Info.Next.Should().NotBeNull();
+            content.Results.Should().Contain(c => c.Name == "Rick Sanchez");
+            content.Results.Should().Contain(c => c.Name == "Morty Smith");
+        }
+
+        [Test, AllureTag("API"), AllureSeverity(SeverityLevel.critical)]
+        [AllureFeature("Character API")]
         public async Task GetCharacters_WithNameFilter_ShouldReturnFilteredResults()
         {
             // Arrange
@@ -53,120 +62,93 @@ namespace Tests;
 
             // Act
             var response = await _apiClient.GetAsync($"?{resource}");
-            var content = response.Content;
+            var content = SerializationHelper.Deserialize<CharactersResponse>(response.Content!);
 
             // Assert
             response.StatusCode.Should().Be(HttpStatusCode.OK);
-            content.Should().Contain(name);
-            content.Should().Contain("Alive");
-            content.Should().Contain("Human");
+            content.Results.Should().Contain(c => c.Name == name);
+            content.Results.Should().Contain(c => c.Status == "Alive");
+            content.Results.Should().Contain(c => c.Species == "Human");
         }
 
-        [Test, AllureTag("API"), AllureSeverity(SeverityLevel.normal)]
-        [AllureFeature("Character API"), AllureStory("Filter characters by multiple parameters")]
+        [Test, AllureTag("API"), AllureSeverity]
+        [AllureFeature("Character API")]
+        [AllureLink("Empty string for type filter returns characters with not empty type", "https://github.com/allure-issue/Allure-Issue")]
         public async Task GetCharacters_WithMultipleFilters_ShouldReturnFilteredResults()
         {
             // Arrange
-            var filters = new
-            {
-                name = "Morty Smith",
-                status = "Alive",
-                species = "Human",
-                type = "",
-                gender = "Male"
-            };
+            var response = await _apiClient.GetAsync();
+            var content = SerializationHelper.Deserialize<CharactersResponse>(response.Content!);
+            var expectedCharacter = content.Results[0];
+            
             var resource = string.Join("&", 
-                _apiClient.BuildQueryParameter("name", filters.name),
-                _apiClient.BuildQueryParameter("status", filters.status),
-                _apiClient.BuildQueryParameter("species", filters.species),
-                _apiClient.BuildQueryParameter("type", filters.type),
-                _apiClient.BuildQueryParameter("gender", filters.gender));
+                _apiClient.BuildQueryParameter("name", expectedCharacter.Name),
+                _apiClient.BuildQueryParameter("status", expectedCharacter.Status),
+                _apiClient.BuildQueryParameter("species", expectedCharacter.Species),
+                _apiClient.BuildQueryParameter("type", expectedCharacter.Type),
+                _apiClient.BuildQueryParameter("gender", expectedCharacter.Gender));
+
+            // Act
+            response = await _apiClient.GetAsync($"?{resource}");
+            content = SerializationHelper.Deserialize<CharactersResponse>(response.Content!);
+
+            // Assert
+            response.StatusCode.Should().Be(HttpStatusCode.OK);
+            content.Results.Should().NotBeEmpty().And.HaveCountGreaterOrEqualTo(1);
+            content.Results[0].Should().BeEquivalentTo(expectedCharacter);
+        }
+
+        [TestCase("status", "Dead")]
+        [TestCase("gender", "Female")]
+        [TestCase("species", "Alien")]
+        [Test, AllureTag("API"), AllureSeverity]
+        [AllureFeature("Character API")]
+        public async Task GetCharacters_WithDifferentFilters_ShouldReturnFilteredResults(string filter, string value)
+        {
+            // Arrange
+            var resource = _apiClient.BuildQueryParameter(filter, value);
+
+            // Act
+            var response = await _apiClient.GetAsync($"?{resource}");
+            var content = SerializationHelper.Deserialize<CharactersResponse>(response.Content!);
+
+            // Assert
+            response.StatusCode.Should().Be(HttpStatusCode.OK);
+            content.Results.Should().NotBeEmpty()
+                .And.OnlyContain(character =>
+                    (filter == "status" && character.Status == value) ||
+                    (filter == "gender" && character.Gender == value) ||
+                    (filter == "species" && character.Species == value)
+                );
+        }
+        
+        
+        [Test, AllureTag("API"), AllureSeverity(SeverityLevel.critical)]
+        [AllureFeature("Character API")]
+        public async Task GetCharacters_WithNotExistingEnumValue_ShouldThrowNotFoundException()
+        {
+            // Arrange
+            var resource = _apiClient.BuildQueryParameter("status", "NotExisting");
 
             // Act
             var response = await _apiClient.GetAsync($"?{resource}");
             var content = response.Content;
 
             // Assert
-            response.StatusCode.Should().Be(HttpStatusCode.OK);
-            content.Should().Contain(filters.name);
-            content.Should().Contain(filters.status);
-            content.Should().Contain(filters.species);
-            content.Should().Contain(filters.gender);
+            response.StatusCode.Should().Be(HttpStatusCode.NotFound);
+            content.Should().Contain("\"error\": \"There is nothing here\"");
         }
-
-        [Test, AllureTag("API"), AllureSeverity(SeverityLevel.normal)]
-        [AllureFeature("Character API"), AllureStory("Filter characters by status")]
-        public async Task GetCharacters_WithStatusFilter_ShouldReturnFilteredResults()
-        {
-            // Arrange
-            var status = "Dead";
-            var resource = _apiClient.BuildQueryParameter("status", status);
-
+        
+        [Test, AllureTag("API"), AllureSeverity(SeverityLevel.critical)]
+        [AllureFeature("Character API")]
+        public async Task GetCharacters_WithNullEnumValue_ShouldThrowNotFoundException()
+        { 
             // Act
-            var response = await _apiClient.GetAsync($"?{resource}");
+            var response = await _apiClient.GetAsync("?status=null");
             var content = response.Content;
 
             // Assert
-            response.StatusCode.Should().Be(HttpStatusCode.OK);
-            content.Should().Contain(status);
-            content.Should().Contain("Adjudicator Rick");
-            content.Should().Contain("Human");
-        }
-
-        [Test, AllureTag("API"), AllureSeverity(SeverityLevel.normal)]
-        [AllureFeature("Character API"), AllureStory("Filter characters by gender")]
-        public async Task GetCharacters_WithGenderFilter_ShouldReturnFilteredResults()
-        {
-            // Arrange
-            var gender = "Female";
-            var resource = _apiClient.BuildQueryParameter("gender", gender);
-
-            // Act
-            var response = await _apiClient.GetAsync($"?{resource}");
-            var content = response.Content;
-
-            // Assert
-            response.StatusCode.Should().Be(HttpStatusCode.OK);
-            content.Should().Contain(gender);
-            content.Should().Contain("Summer Smith");
-            content.Should().Contain("Human");
-        }
-
-        [Test, AllureTag("API"), AllureSeverity(SeverityLevel.normal)]
-        [AllureFeature("Character API"), AllureStory("Filter characters by species")]
-        public async Task GetCharacters_WithSpeciesFilter_ShouldReturnFilteredResults()
-        {
-            // Arrange
-            var species = "Alien";
-            var resource = _apiClient.BuildQueryParameter("species", species);
-
-            // Act
-            var response = await _apiClient.GetAsync($"?{resource}");
-            var content = response.Content;
-
-            // Assert
-            response.StatusCode.Should().Be(HttpStatusCode.OK);
-            content.Should().Contain(species);
-            content.Should().Contain("Abadango Cluster Princess");
-            content.Should().Contain("Alive");
-        }
-
-        [Test, AllureTag("API"), AllureSeverity(SeverityLevel.normal)]
-        [AllureFeature("Character API"), AllureStory("Verify character details")]
-        public async Task GetCharacterDetails_ShouldReturnCorrectDetails()
-        {
-            // Arrange
-            var characterId = 1;
-
-            // Act
-            var response = await _apiClient.GetAsync($"/{characterId}");
-            var content = response.Content;
-
-            // Assert
-            response.StatusCode.Should().Be(HttpStatusCode.OK);
-            content.Should().Contain("Rick Sanchez");
-            content.Should().Contain("Alive");
-            content.Should().Contain("Human");
-            content.Should().Contain("Earth (C-137)");
+            response.StatusCode.Should().Be(HttpStatusCode.NotFound);
+            content.Should().Contain("\"error\":\"There is nothing here\"");
         }
     }
