@@ -5,7 +5,7 @@ namespace Tests;
 
 public class BaseTest
 {
-    protected ApiClient ApiClient;
+    protected ApiClient ApiClient { get; private set; }
 
     [SetUp]
     public void SetUp()

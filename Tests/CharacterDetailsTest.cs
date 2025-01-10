@@ -1,5 +1,4 @@
 using System.Net;
-using Allure.Net.Commons;
 using Allure.NUnit;
 using Allure.NUnit.Attributes;
 using Common.Utils;
