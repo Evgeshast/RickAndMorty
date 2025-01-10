@@ -37,7 +37,6 @@ namespace Tests;
         public async Task GetCharacters_ByMultipleIds_ShouldReturnCorrectDetails()
         {
             // Arrange
-            // Arrange
             var getCharacterDetailsResponse = await ApiClient.GetAsync();
             var charactersResponse = SerializationHelper.Deserialize<CharactersResponse>(getCharacterDetailsResponse.Content!);
             var expectedCharacters = charactersResponse.Results.Take(3).ToList();
@@ -61,7 +60,7 @@ namespace Tests;
 
             // Assert
             getCharacterDetailsResponse.StatusCode.Should().Be(HttpStatusCode.NotFound);
-            content.Should().Contain("\"error\": \"Character not found\"");
+            content.Should().Contain("\"error\":\"Character not found\"");
         }
         
         [Test, AllureTag("API"), AllureSeverity]
