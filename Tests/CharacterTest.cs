@@ -11,7 +11,7 @@ namespace Tests;
 
     [TestFixture]
     [AllureNUnit]
-    public class CharacterApiTests : BaseTest
+    public class CharacterTests : BaseTest
     {
         
         [Test, AllureTag("API"), AllureSeverity(SeverityLevel.critical)]
@@ -160,6 +160,19 @@ namespace Tests;
         { 
             // Act
             var response = await ApiClient.GetAsync("?status=null");
+            var content = response.Content;
+
+            // Assert
+            response.StatusCode.Should().Be(HttpStatusCode.NotFound);
+            content.Should().Contain("\"error\":\"There is nothing here\"");
+        }
+        
+        [Test, AllureTag("API"), AllureSeverity]
+        [AllureFeature("Character API")]
+        public async Task GetCharacters_WithLongNameValue_ShouldThrowNotFoundException()
+        { 
+            // Act
+            var response = await ApiClient.GetAsync($"?name={StringHelper.GenerateRandomString(5000)}");
             var content = response.Content;
 
             // Assert
