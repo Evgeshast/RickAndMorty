@@ -20,10 +20,10 @@ namespace Tests;
         {
             // Arrange
             const int page = 1;
-            var resource = _apiClient.BuildQueryParameter("page", page.ToString());
+            var resource = ApiClient.BuildQueryParameter("page", page.ToString());
 
             // Act
-            var response = await _apiClient.GetAsync($"?{resource}");
+            var response = await ApiClient.GetAsync($"?{resource}");
             var content = SerializationHelper.Deserialize<CharactersResponse>(response.Content!);
 
             // Assert
@@ -40,7 +40,7 @@ namespace Tests;
         public async Task GetCharacters_WithoutParameters_ShouldReturnValidResponse()
         {
             // Act
-            var response = await _apiClient.GetAsync();
+            var response = await ApiClient.GetAsync();
             var content = SerializationHelper.Deserialize<CharactersResponse>(response.Content!);
 
             // Assert
@@ -58,10 +58,10 @@ namespace Tests;
         {
             // Arrange
             var name = "Rick Sanchez";
-            var resource = _apiClient.BuildQueryParameter("name", name);
+            var resource = ApiClient.BuildQueryParameter("name", name);
 
             // Act
-            var response = await _apiClient.GetAsync($"?{resource}");
+            var response = await ApiClient.GetAsync($"?{resource}");
             var content = SerializationHelper.Deserialize<CharactersResponse>(response.Content!);
 
             // Assert
@@ -77,19 +77,19 @@ namespace Tests;
         public async Task GetCharacters_WithMultipleFilters_ShouldReturnFilteredResults()
         {
             // Arrange
-            var response = await _apiClient.GetAsync();
+            var response = await ApiClient.GetAsync();
             var content = SerializationHelper.Deserialize<CharactersResponse>(response.Content!);
             var expectedCharacter = content.Results[0];
             
             var resource = string.Join("&", 
-                _apiClient.BuildQueryParameter("name", expectedCharacter.Name),
-                _apiClient.BuildQueryParameter("status", expectedCharacter.Status),
-                _apiClient.BuildQueryParameter("species", expectedCharacter.Species),
-                _apiClient.BuildQueryParameter("type", expectedCharacter.Type),
-                _apiClient.BuildQueryParameter("gender", expectedCharacter.Gender));
+                ApiClient.BuildQueryParameter("name", expectedCharacter.Name),
+                ApiClient.BuildQueryParameter("status", expectedCharacter.Status),
+                ApiClient.BuildQueryParameter("species", expectedCharacter.Species),
+                ApiClient.BuildQueryParameter("type", expectedCharacter.Type),
+                ApiClient.BuildQueryParameter("gender", expectedCharacter.Gender));
 
             // Act
-            response = await _apiClient.GetAsync($"?{resource}");
+            response = await ApiClient.GetAsync($"?{resource}");
             content = SerializationHelper.Deserialize<CharactersResponse>(response.Content!);
 
             // Assert
@@ -106,10 +106,10 @@ namespace Tests;
         public async Task GetCharacters_WithDifferentFilters_ShouldReturnFilteredResults(string filter, string value)
         {
             // Arrange
-            var resource = _apiClient.BuildQueryParameter(filter, value);
+            var resource = ApiClient.BuildQueryParameter(filter, value);
 
             // Act
-            var response = await _apiClient.GetAsync($"?{resource}");
+            var response = await ApiClient.GetAsync($"?{resource}");
             var content = SerializationHelper.Deserialize<CharactersResponse>(response.Content!);
 
             // Assert
@@ -128,10 +128,10 @@ namespace Tests;
         public async Task GetCharacters_WithNotExistingEnumValue_ShouldThrowNotFoundException()
         {
             // Arrange
-            var resource = _apiClient.BuildQueryParameter("status", "NotExisting");
+            var resource = ApiClient.BuildQueryParameter("status", "NotExisting");
 
             // Act
-            var response = await _apiClient.GetAsync($"?{resource}");
+            var response = await ApiClient.GetAsync($"?{resource}");
             var content = response.Content;
 
             // Assert
@@ -144,7 +144,7 @@ namespace Tests;
         public async Task GetCharacters_WithNullEnumValue_ShouldThrowNotFoundException()
         { 
             // Act
-            var response = await _apiClient.GetAsync("?status=null");
+            var response = await ApiClient.GetAsync("?status=null");
             var content = response.Content;
 
             // Assert

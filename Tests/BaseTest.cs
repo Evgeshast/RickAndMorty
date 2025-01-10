@@ -5,11 +5,11 @@ namespace Tests;
 
 public class BaseTest
 {
-    protected ApiClient _apiClient;
+    protected ApiClient ApiClient;
 
     [SetUp]
     public void SetUp()
     {
-        _apiClient = new ApiClient(Endpoints.Character);
+        ApiClient = new ApiClient(Endpoints.Character);
     }
 }

@@ -19,12 +19,12 @@ namespace Tests;
         public async Task GetCharacterDetails_ShouldReturnCorrectDetails()
         {
             // Arrange
-            var getCharactersResponse = await _apiClient.GetAsync();
+            var getCharactersResponse = await ApiClient.GetAsync();
             var charactersResponse = SerializationHelper.Deserialize<CharactersResponse>(getCharactersResponse.Content!);
             var expectedCharacter = charactersResponse.Results[0];
             
             // Act
-            var getCharacterDetailsResponse = await _apiClient.GetAsync($"/{expectedCharacter.Id}");
+            var getCharacterDetailsResponse = await ApiClient.GetAsync($"/{expectedCharacter.Id}");
             var character = SerializationHelper.Deserialize<Character>(getCharacterDetailsResponse.Content!);
 
             // Assert
@@ -38,12 +38,12 @@ namespace Tests;
         {
             // Arrange
             // Arrange
-            var getCharacterDetailsResponse = await _apiClient.GetAsync();
+            var getCharacterDetailsResponse = await ApiClient.GetAsync();
             var charactersResponse = SerializationHelper.Deserialize<CharactersResponse>(getCharacterDetailsResponse.Content!);
             var expectedCharacters = charactersResponse.Results.Take(3).ToList();
 
             // Act
-            var getCharactersDetailsResponse = await _apiClient.GetAsync("/1,2,3");
+            var getCharactersDetailsResponse = await ApiClient.GetAsync("/1,2,3");
             var characters = SerializationHelper.Deserialize<List<Character>>(getCharactersDetailsResponse.Content!);
 
             // Assert
@@ -56,7 +56,7 @@ namespace Tests;
         public async Task GetCharacterDetails_WithNegativeId_ShouldReturnNotFound()
         {
             // Act
-            var getCharacterDetailsResponse = await _apiClient.GetAsync("/-1");
+            var getCharacterDetailsResponse = await ApiClient.GetAsync("/-1");
             var content = getCharacterDetailsResponse.Content;
 
             // Assert
@@ -69,12 +69,12 @@ namespace Tests;
         public async Task GetCharacters_ByNotExistingId_ShouldReturnCorrectDetails()
         {
             // Arrange
-            var getCharacterDetailsResponse = await _apiClient.GetAsync();
+            var getCharacterDetailsResponse = await ApiClient.GetAsync();
             var charactersResponse = SerializationHelper.Deserialize<CharactersResponse>(getCharacterDetailsResponse.Content!);
             var charactersCount = charactersResponse.Info.Count;
 
             // Act
-            var getCharactersDetailsResponse = await _apiClient.GetAsync($"/{charactersCount + 1}");
+            var getCharactersDetailsResponse = await ApiClient.GetAsync($"/{charactersCount + 1}");
             var content = getCharactersDetailsResponse.Content;
     
             // Assert
