@@ -4,6 +4,8 @@
 # Rider ignored files
 /projectSettingsUpdater.xml
 /.idea.RickAndMorty.iml
+.idea/
+.idea.RickAndMorty/
 /contentModel.xml
 /modules.xml
 # Editor-based HTTP Client requests
