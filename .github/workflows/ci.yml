@@ -36,15 +36,13 @@ jobs:
         run: dotnet test --logger "trx;LogFileName=test_results.trx" --results-directory allure-results
         continue-on-error: true
 
-      # # Step 6: Install Allure CLI
-      # - name: Install Allure CLI
-      #   run: |
-      #     sudo apt update
-      #     sudo apt install -y openjdk-11-jre # Required for Allure
-      #     curl -o allure.tar.gz -L https://github.com/allure-framework/allure2/releases/download/2.21.0/allure-2.21.0.tgz
-      #     tar -xzf allure.tar.gz
-      #     sudo mv allure-2.21.0 /opt/allure
-      #     sudo ln -s /opt/allure/bin/allure /usr/local/bin/allure
+      # Step 6: Install Allure CLI
+      - name: Install Allure CLI
+        run: |
+          sudo apt update && sudo apt install -y openjdk-11-jre curl tar
+          curl -L https://github.com/allure-framework/allure2/releases/latest/download/allure-2.21.0.tgz | sudo tar -xz -C /opt/
+          sudo ln -s /opt/allure-2.21.0/bin/allure /usr/local/bin/allure
+
       
       # Step 7: Generate Allure Report
       - name: Generate Allure Report
