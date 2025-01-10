@@ -39,12 +39,12 @@ jobs:
       # Step 6: Install Allure CLI
       - name: Install Allure CLI
         run: |
-        sudo apt update
-        sudo apt install -y openjdk-11-jre # Required for Allure
-        curl -o allure.tar.gz -L https://github.com/allure-framework/allure2/releases/download/2.21.0/allure-2.21.0.tgz
-        tar -xzf allure.tar.gz
-        sudo mv allure-2.21.0 /opt/allure
-        sudo ln -s /opt/allure/bin/allure /usr/local/bin/allure
+          sudo apt update
+          sudo apt install -y openjdk-11-jre # Required for Allure
+          curl -o allure.tar.gz -L https://github.com/allure-framework/allure2/releases/download/2.21.0/allure-2.21.0.tgz
+          tar -xzf allure.tar.gz
+          sudo mv allure-2.21.0 /opt/allure
+          sudo ln -s /opt/allure/bin/allure /usr/local/bin/allure
 
       
       # Step 7: Generate Allure Report
