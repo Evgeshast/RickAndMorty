@@ -87,18 +87,31 @@ The report will open in your default browser.
 
 ## CI/CD (GitHub Actions)
 
-The project includes a GitHub Actions workflow to automate testing and report generation. The workflow performs the following steps:
+This project includes a GitHub Actions workflow to automate the testing and Allure report generation. The workflow performs the following steps:
 
-1. Builds the project.
-2. Runs all tests or filters them based on input.
-3. Generates an Allure report.
-4. Saves the report as an artifact in GitHub Actions.
-5. (Optional) Publishes the report to GitHub Pages.
+1. **Trigger**: The workflow runs automatically on `push` or `pull_request` events targeting the `main` branch.
+2. **Build and Test**:
+   - The project is built using .NET SDK.
+   - Tests are run, and results are stored in `allure-results` directory in `.trx` format.
+3. **Install Allure CLI**: Allure CLI is installed on the CI server to generate reports.
+4. **Generate Allure Report**: The Allure report is generated from the test results.
+5. **Upload Artifact**: The generated Allure report is uploaded as an artifact for later use.
+6. **Publish Report**: The report is automatically published to GitHub Pages.
 
-To manually trigger the workflow:
+### How to Trigger the Workflow
+
 1. Go to the **Actions** tab in your repository.
-2. Select the workflow "C# Test Runner with Allure."
-3. Click **Run workflow** and optionally specify a test filter.
+2. Select the workflow **C# Test Runner with Allure Reporting**.
+3. The workflow will trigger automatically on a `push` or `pull_request` event to the `main` branch. Optionally, you can manually trigger the workflow by clicking **Run workflow**.
+
+### Viewing the Allure Report
+
+Once the workflow completes, the Allure report is published to GitHub Pages. You can view it by navigating to the following URL:
+
+```
+https://<your-username>.github.io/<repository-name>/allure-report/
+```
+
 
 ---
 
