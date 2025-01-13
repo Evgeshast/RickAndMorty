@@ -1,5 +1,5 @@
 
-# C# Test Runner with Allure Reporting
+# Rick And Morty Test Project
 
 This project includes a setup for automated testing with Allure reporting using .NET and GitHub Actions.
 
@@ -101,7 +101,7 @@ This project includes a GitHub Actions workflow to automate the testing and Allu
 ### How to Trigger the Workflow
 
 1. Go to the **Actions** tab in your repository.
-2. Select the workflow **C# Test Runner with Allure Reporting**.
+2. Select the workflow **Rick And Morty API Functional tests**.
 3. The workflow will trigger automatically on a `push` or `pull_request` event to the `main` branch. Optionally, you can manually trigger the workflow by clicking **Run workflow**.
 
 ### Viewing the Allure Report
