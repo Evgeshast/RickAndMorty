@@ -1,4 +1,4 @@
-name: CI with Allure Reporting
+name: Rick And Morty API Functional tests
 
 on:
   push:
