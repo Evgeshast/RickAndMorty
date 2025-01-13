@@ -109,7 +109,7 @@ This project includes a GitHub Actions workflow to automate the testing and Allu
 Once the workflow completes, the Allure report is published to GitHub Pages. You can view it by navigating to the following URL:
 
 ```
-https://<your-username>.github.io/<repository-name>/allure-report/
+https://evgeshast.github.io/RickAndMorty/
 ```
 
 
